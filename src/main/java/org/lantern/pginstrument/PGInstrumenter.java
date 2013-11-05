@@ -83,7 +83,7 @@ public class PGInstrumenter implements ClassFileTransformer {
         // Check whether we should ignore this class
         for (String ignoredPrefix : ignoredPrefixes) {
             if (dottedClassName.contains(ignoredPrefix)) {
-                fullClasses.add(dottedClassName);
+                addClass(dottedClassName);
                 return null;
             }
         }
@@ -134,7 +134,7 @@ public class PGInstrumenter implements ClassFileTransformer {
         } catch (Exception e) {
             System.err.println(e.getMessage() + " transforming class "
                     + dottedClassName + "; returning uninstrumented class");
-            fullClasses.add(dottedClassName);
+            addClass(dottedClassName);
         }
         return null;
     }
@@ -199,7 +199,7 @@ public class PGInstrumenter implements ClassFileTransformer {
         inst.addTransformer(instrumenter, false);
         Class<?>[] loadedClasses = inst.getAllLoadedClasses();
         for (Class<?> clazz : loadedClasses) {
-            instrumenter.fullClasses.add(clazz.getName());
+            instrumenter.addClass(clazz.getName());
         }
 
         Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
