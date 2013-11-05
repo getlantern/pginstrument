@@ -1,0 +1,38 @@
+version = "0.1.0"
+
+buildscript {
+    repositories {
+        maven {
+            name 'Gradle Shadow'
+            url 'http://dl.bintray.com/content/johnrengelman/gradle-plugins'
+        }
+    }
+    dependencies {
+        classpath 'org.gradle.plugins:shadow:0.7.4'
+    }
+}
+
+repositories { mavenCentral() }
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'shadow'
+
+dependencies {
+    compile group: 'javassist', name: 'javassist', version: '3.12.1.GA'
+}
+
+jar {
+    manifest {
+        attributes('Premain-Class': 'org.lantern.pginstrument.PGInstrumenter')
+    }
+}
+
+task(smokeTest, dependsOn: 'shadow', type: JavaExec) {
+    main = 'org.lantern.pginstrument.TestInstrumenter'
+    classpath = sourceSets.test.runtimeClasspath
+    jvmArgs "-javaagent:build/libs/pginstrument-${project.version}-shadow.jar",
+            "-Xbootclasspath/a:build/libs/pginstrument-${project.version}-shadow.jar",
+            "-Dpginstrument.debug=true"
+            
+}
